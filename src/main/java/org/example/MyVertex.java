@@ -1,25 +1,24 @@
 package org.example;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.List;
 
-
+enum VertexColor {
+    WHITE,
+    GREY,
+    BLACK,
+}
 
 public class MyVertex {
-
-    enum VertexColor {
-        WHITE,
-        GREY,
-        BLACK,
-    };
 
     public MyVertex() {
         color = VertexColor.WHITE;
     }
 
-    public void addRoute( int route )
+    public void addRoute( int route, int start )
     {
         myRoutes.add(route);
+        fromVertexes.add(start);
     }
 
     public VertexColor getColor() {
@@ -29,6 +28,22 @@ public class MyVertex {
     public void setColor(VertexColor color) {
         this.color = color;
     }
-    private final Set<Integer> myRoutes = new TreeSet<>();
+
+    public boolean isPathExists(int route, int from)
+    {
+        int routeidx = myRoutes.indexOf(route);
+        if (routeidx != -1) {
+            return fromVertexes.get(routeidx).equals(from);
+        }
+
+        return false;
+    }
+
+    public List<Integer> getMyRoutes() {
+        return myRoutes;
+    }
+
+    private final List<Integer> myRoutes = new ArrayList<>();
+    private final List<Integer> fromVertexes = new ArrayList<>(); // identify edge to traverse
     private VertexColor color;
 }

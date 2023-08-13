@@ -21,11 +21,11 @@ public class Main {
         server.createContext("/api/direct", new MyHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
-
-        System.out.println("1 --> 2 = " + g.isPathExists(1, 2));
-        System.out.println("4 --> 0 = " + g.isPathExists(4, 0));
-        System.out.println("3 --> 1 = " + g.isPathExists(3, 1));
-        System.out.println("3 --> 0 = " + g.isPathExists(3, 0));
+//
+//        System.out.println("1 --> 2 = " + g.isPathExists(1, 2)); // true
+//        System.out.println("4 --> 0 = " + g.isPathExists(4, 0)); // false
+//        System.out.println("3 --> 1 = " + g.isPathExists(3, 1)); // true
+//        System.out.println("3 --> 2 = " + g.isPathExists(3, 2)); // false
         // try bfs
     }
 
@@ -86,13 +86,11 @@ public class Main {
 
             String resp_str = "Check get params please!!!";
             if(to != -1 && from != -1) {
-                StringBuilder response = new StringBuilder();
-                response.append("{\n");
-                response.append("\t\"from\": ").append(from).append(",\n");
-                response.append("\t\"to\": ").append(to).append(",\n");
-                response.append("\t\"direct\": ").append(g.isPathExists(from, to)).append("\n}");
 
-                resp_str = response.toString();
+                resp_str = "{\n" +
+                        "\t\"from\": " + from + ",\n" +
+                        "\t\"to\": " + to + ",\n" +
+                        "\t\"direct\": " + g.isPathExists(from, to) + "\n}";
             }
 
             t.sendResponseHeaders(200, resp_str.length());

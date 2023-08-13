@@ -1,10 +1,9 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
+
 import static java.lang.Math.max;
-import static org.example.MyVertex.VertexColor.*;
+import static org.example.VertexColor.*;
 
 public class Graph {
     public void addEdge(int vertex_start, int vertex_end, int route_num) {
@@ -21,7 +20,7 @@ public class Graph {
         }
 
         adjList_.get(vertex_start).add(vertex_end);
-        vertexData_.get(vertex_end).addRoute(route_num);
+        vertexData_.get(vertex_end).addRoute(route_num, vertex_start);
     }
 
     public void addVertex(int vertex_start, int route_num) {
@@ -34,7 +33,7 @@ public class Graph {
                 vertexData_.add(new MyVertex());
             }
         }
-        vertexData_.get(vertex_start).addRoute(route_num);
+        vertexData_.get(vertex_start).addRoute(route_num, -1);
     }
 
     private void prepareGraph()
@@ -46,33 +45,45 @@ public class Graph {
     }
 
     // simple bfs alg
-    public boolean isPathExists(int start, int end)
+    public boolean isPathExists( int start, int end )
     {
-        prepareGraph();
-        // Create a queue for BFS
-        LinkedList<Integer> queue  = new LinkedList<>();
-        vertexData_.get(start).setColor(GREY);
+        // heuristics for reduce routes
+        List<Integer> routes = new ArrayList<>(vertexData_.get(start).getMyRoutes());
+        routes.retainAll(vertexData_.get(end).getMyRoutes());
 
-        queue.add(start);
-        while(!queue.isEmpty()) {
+        if( routes.isEmpty() ) // no intersection in routes
+            return false;
 
-            // Dequeue a vertex from queue and print it
-            int next = queue.poll();
+        // test each possible route
+        for(Integer route : routes) {
+            prepareGraph();
+            // Create a queue for BFS
+            LinkedList<Integer> queue = new LinkedList<>();
+            vertexData_.get(start).setColor(GREY);
 
-            // then mark it visited and enqueue it
-            Iterator<Integer> i = adjList_.get(next).listIterator();
-            while (i.hasNext()) {
-                int n = i.next();
-                if (vertexData_.get(n).getColor() == WHITE) {
-                    vertexData_.get(n).setColor(GREY);
-                    if (n == end) {
-                        return true;
+            queue.add(start);
+            while (!queue.isEmpty()) {
+
+                // Dequeue a vertex from queue and print it
+                int next = queue.poll();
+
+                // then mark it visited and enqueue it
+                Iterator<Integer> i = adjList_.get(next).listIterator();
+                while (i.hasNext()) {
+                    int n = i.next();
+                    if (vertexData_.get(n).isPathExists(route, next)) {
+                        if (vertexData_.get(n).getColor() == WHITE) {
+                            vertexData_.get(n).setColor(GREY);
+                            if (n == end) {
+                                return true;
+                            }
+                            queue.add(n);
+                        }
                     }
-                    queue.add(n);
                 }
-            }
 
-            vertexData_.get(next).setColor(BLACK);
+                vertexData_.get(next).setColor(BLACK);
+            }
         }
 
         return false;
